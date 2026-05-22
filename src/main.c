@@ -1,8 +1,10 @@
+#include "cubeless/serial.h"
 #include "cubeless/clock.h"
-#include "cubeless/uart.h"
-
 #include "stm32g4xx_hal.h"
+
 #include "stdio.h"
+
+static void led_init(void);
 
 /* =========================
  * CLOCK CONFIG
@@ -12,111 +14,78 @@ ClockConfig_t clock_conf = {
     .target_freq = 80000000
 };
 
-/* =========================
- * UART CONFIG
- * ========================= */
-UartConfig_t uart2_config = {
-
-    .instance = USART2,
-
-    .baudrate = 115200,
-
-    .word_length = UART_WORDLENGTH_8B,
-
-    .stop_bits = UART_STOPBITS_1,
-
-    .parity = UART_PARITY_NONE,
-
-    .mode = UART_MODE_TX_RX,
-
-    .hw_flow_ctl = UART_HWCONTROL_NONE,
-
-    .oversampling = UART_OVERSAMPLING_16,
-
-    .tx = {
-        .port = GPIOA,
-        .pin = GPIO_PIN_2,
-        .alternate = GPIO_AF7_USART2,
-        .pull = GPIO_NOPULL,
-        .speed = GPIO_SPEED_FREQ_VERY_HIGH
-    },
-
-    .rx = {
-        .port = GPIOA,
-        .pin = GPIO_PIN_3,
-        .alternate = GPIO_AF7_USART2,
-        .pull = GPIO_NOPULL,
-        .speed = GPIO_SPEED_FREQ_VERY_HIGH
-    }
-};
 
 /* =========================
- * UART HANDLE
+ * TX BUFFER
  * ========================= */
-Uart_t uart2;
-
-
-/* =========================
- * printf redirect
- * ========================= */
-int _write(int file, char *ptr, int len)
-{
-    uart_write(
-        &uart2,
-        (uint8_t*)ptr,
-        len,
-        HAL_MAX_DELAY
-    );
-
-    return len;
-}
+uint8_t tx_buffer[] =
+    "uart dma example\r\n";
 
 int main(void)
 {
     HAL_Init();
 
+    /* =========================
+     * CLOCK ENABLE
+     * ========================= */
     __HAL_RCC_PWR_CLK_ENABLE();
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
     __HAL_RCC_USART2_CLK_ENABLE();
 
+    __HAL_RCC_DMA1_CLK_ENABLE();
+
+    __HAL_RCC_DMAMUX1_CLK_ENABLE();
+
     HAL_PWREx_ControlVoltageScaling(
         PWR_REGULATOR_VOLTAGE_SCALE1
     );
 
     /* =========================
-     * CLOCK INIT
+     * SYSTEM CLOCK
      * ========================= */
     clock_init(&clock_conf);
 
     SystemCoreClockUpdate();
 
     /* =========================
-     * UART INIT
+     * INIT
      * ========================= */
-    if (uart_init(
-            &uart2,
-            &uart2_config
-        ) != UART_OK)
-    {
-        while (1);
-    }
 
-    printf("UART INIT OK\r\n");
+    led_init();
+
+    serial_init();
 
     while (1)
     {
-        printf("ola mundo\r\n");
-
-        HAL_GPIO_TogglePin(
-            GPIOA,
-            GPIO_PIN_5
-        );
-
-        HAL_Delay(500);
+       printf("ola mundo \r\n");
+        HAL_Delay(1000);
     }
 }
+
+static void led_init(void)
+{
+    GPIO_InitTypeDef led_conf = {0};
+
+    led_conf.Pin = GPIO_PIN_5;
+
+    led_conf.Mode =
+        GPIO_MODE_OUTPUT_PP;
+
+    led_conf.Pull =
+        GPIO_NOPULL;
+
+    led_conf.Speed =
+        GPIO_SPEED_FREQ_LOW;
+
+    HAL_GPIO_Init(
+        GPIOA,
+        &led_conf
+    );
+}
+ 
+
 
 /* =========================
  * SYSTICK

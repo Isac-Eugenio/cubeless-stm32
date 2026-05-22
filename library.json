@@ -1,0 +1,23 @@
+{
+    "name": "cubeless-stm32",
+    "version": "0.1.0",
+    "description": "Lightweight STM32 HAL abstraction library for PlatformIO",
+    "keywords": [
+        "stm32",
+        "hal",
+        "uart",
+        "gpio",
+        "clock"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/seuuser/cubeless-stm32.git"
+    },
+    "authors": [
+        {
+            "name": "Isac Eugenio"
+        }
+    ],
+    "frameworks": "stm32cube",
+    "platforms": "ststm32"
+}

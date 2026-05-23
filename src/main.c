@@ -1,10 +1,9 @@
 #include "cubeless/serial.h"
 #include "cubeless/clock.h"
+#include "cubeless/gpio.h"
 #include "stm32g4xx_hal.h"
 
 #include "stdio.h"
-
-static void led_init(void);
 
 /* =========================
  * CLOCK CONFIG
@@ -14,12 +13,17 @@ ClockConfig_t clock_conf = {
     .target_freq = 80000000
 };
 
-
 /* =========================
- * TX BUFFER
+ * LED CONFIG
  * ========================= */
-uint8_t tx_buffer[] =
-    "uart dma example\r\n";
+
+GpioConfig_t led = {
+    .config_mode = GPIO_CONFIG_BASIC,
+    .preset = GPIO_OUTPUT_DEFAULT,
+    .port = GPIOA,
+    .pin = GPIO_PIN_5
+};
+
 
 int main(void)
 {
@@ -53,37 +57,23 @@ int main(void)
      * INIT
      * ========================= */
 
-    led_init();
+    gpio_init(&led);
 
     serial_init();
 
     while (1)
-    {
-       printf("ola mundo \r\n");
+    {   
+        GPIO_PinState status;
+
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+        status = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5);
+
+        printf("led está %s\r\n", status == GPIO_PIN_SET ? "ligado" : "desligado");
+
         HAL_Delay(1000);
     }
 }
 
-static void led_init(void)
-{
-    GPIO_InitTypeDef led_conf = {0};
-
-    led_conf.Pin = GPIO_PIN_5;
-
-    led_conf.Mode =
-        GPIO_MODE_OUTPUT_PP;
-
-    led_conf.Pull =
-        GPIO_NOPULL;
-
-    led_conf.Speed =
-        GPIO_SPEED_FREQ_LOW;
-
-    HAL_GPIO_Init(
-        GPIOA,
-        &led_conf
-    );
-}
  
 
 

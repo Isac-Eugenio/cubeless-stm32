@@ -18,6 +18,12 @@ typedef enum {
 } UartStatus_t;
 
 
+typedef enum {
+    UART_WITH_DMA,
+    UART_NORMAL
+
+} UartSource_t;
+
 /* =========================
  * GPIO UART CONFIG
  * ========================= */
@@ -85,6 +91,9 @@ typedef struct {
 /* =========================
  * API
  * ========================= */
+
+void uart_enable(USART_TypeDef *uart);
+
 UartStatus_t uart_init(
     Uart_t *uart,
     UartConfig_t *conf
@@ -103,13 +112,10 @@ UartStatus_t uart_write_string(
     uint32_t timeout
 );
 
-/* =========================
- * FUTURE DMA SUPPORT
- * ========================= */
-void uart_wait(Uart_t *uart);
-
 const char *uart_error_str(
     UartStatus_t status
 );
+
+void uart_wait(Uart_t *uart);
 
 #endif

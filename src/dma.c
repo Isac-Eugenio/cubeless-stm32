@@ -48,6 +48,25 @@ DmaStatus_t dma_init(
 }
 
 /* =========================
+ * DMA ENABLE
+ * ========================= */
+void dma_enable(DMA_Channel_TypeDef *channel){
+    if(
+        channel == DMA1_Channel1 ||
+        channel == DMA1_Channel2 ||
+        channel == DMA1_Channel3
+    ) __HAL_RCC_DMA1_CLK_ENABLE();
+    
+    if( channel == DMA2_Channel1 ||
+        channel == DMA2_Channel2 ||
+        channel == DMA2_Channel3
+    ) __HAL_RCC_DMA2_CLK_ENABLE();
+
+    __HAL_RCC_DMAMUX1_CLK_ENABLE();
+
+}
+
+/* =========================
  * DMA WAIT
  * ========================= */
 void dma_wait(

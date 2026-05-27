@@ -149,6 +149,18 @@ UartStatus_t uart_write_string(
     );
 }
 
+
+/* =========================
+ * UART ENABLE
+ * ========================= */
+void uart_enable(USART_TypeDef *uart){
+    if(uart == USART1) __HAL_RCC_USART1_CLK_ENABLE();
+    else if(uart == USART2) __HAL_RCC_USART2_CLK_ENABLE();
+    else if(uart == USART3) __HAL_RCC_USART3_CLK_ENABLE();
+    else if(uart == UART4) __HAL_RCC_UART4_CLK_ENABLE();
+    else if(uart == UART5) __HAL_RCC_UART5_CLK_ENABLE();
+}
+
 /* =========================
  * UART WAIT
  * ========================= */

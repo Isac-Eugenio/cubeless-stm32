@@ -56,6 +56,9 @@ typedef struct {
 /* =========================
  * API
  * ========================= */
+
+void dma_enable(DMA_Channel_TypeDef *channel);
+
 DmaStatus_t dma_init(
     Dma_t *dma,
     DmaConfig_t *conf
